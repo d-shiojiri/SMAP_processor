@@ -1,0 +1,8 @@
+# Credentials and downloaded / derived data
+SPL3SMP_E_v006/
+processed/
+*.h5
+*.nc
+*.part
+__pycache__/
+.DS_Store
