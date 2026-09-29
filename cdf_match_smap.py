@@ -56,7 +56,16 @@ class References:
             if not path.exists(): raise FileNotFoundError(path)
             with Dataset(path) as ds:
                 time = ds.variables["time"]; days = epoch_days(time[:], time.units, getattr(time, "calendar", "standard"))
-                lat = np.asarray(ds.variables["lat"][:]); lon = np.asarray(ds.variables["lon"][:])
+                # Nature-run files use latitude/longitude, while many CF files
+                # use the abbreviated lat/lon names. Support both conventions.
+                lat_name = next((n for n in ("lat", "latitude") if n in ds.variables), None)
+                lon_name = next((n for n in ("lon", "longitude") if n in ds.variables), None)
+                if not lat_name or not lon_name:
+                    raise KeyError(
+                        f"Reference file needs lat/lon or latitude/longitude variables: {path} "
+                        f"(available: {', '.join(ds.variables)})"
+                    )
+                lat = np.asarray(ds.variables[lat_name][:]); lon = np.asarray(ds.variables[lon_name][:])
                 if lat.ndim != 1 or lon.ndim != 1: raise ValueError(f"Reference coordinates must be 1-D: {path}")
                 lookup = {int(day): i for i, day in enumerate(days)}
             self.sources.append((path, var, depth, nearest(lat, input_lat), nearest(lon, input_lon, True), lookup))
