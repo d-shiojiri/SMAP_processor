@@ -18,14 +18,21 @@ Run all commands from this directory.
 # 1. Merge daily HDF5 files into yearly 9 km EASE-Grid NetCDF files.
 python3 merge_smap_l3_daily.py --overwrite
 
-# 2. Average both AM and PM fields to 0.5-degree daily grids.
+# 2. Average to the AMSR slot-compatible 0.5-degree daily grid.
 python3 upscale_smap_l3_0p5deg.py --overwrite
 
-# 3. Grid-wise empirical CDF matching against the reference specified below.
-python3 cdf_match_smap.py --overwrite
+# 3. Use the AMSR CDF implementation unchanged.
+python3 /data02/shiojiri/DATA/AMSR/cdf_match_amsr.py \
+  processed/l3_daily_0p5/SMAP_SMC_daily_0p5deg_avg.nc \
+  --reference-dict reference_paths_template.json \
+  --reference-var SoilMoistV \
+  --output-dir processed/l3_daily_0p5/cdf \
+  --output-mode merged \
+  --output-file SMAP_SMC_daily_0p5deg_cdf.nc \
+  --overwrite
 ```
 
-Stage 1 retains the `Retrieval_recommended` quality-flagged values only and keeps AM/PM as separate variables. Stage 2 computes daily mean, observation count, and mean observation time independently for AM and PM. Stage 3 maps each 0.5-degree SMAP cell independently to the reference distribution using paired dates; it preserves observation-time and count variables.
+Stage 1 retains the `Retrieval_recommended` quality-flagged values only and keeps AM/PM as separate variables. Stage 2 writes AM as `soil_moisture_A_01` and PM as `soil_moisture_D_01`, with matching `observation_time_min_*` variables. Those exact slot names and `(time, lat, lon)` layout are required by `AMSR_processor`'s query and CDF modules. Soil moisture is converted from the SMAP source unit (m3/m3) to the AMSR-compatible percent convention.
 
 `reference_paths_template.json` is a template for the reference soil-moisture NetCDF files. Edit it for the actual reference location and period. Reference files must provide `time`, 1-D `lat`/`lon`, and `SoilMoistV` (or specify `--reference-var`); a depth dimension is supported via `--reference-depth`.
 
