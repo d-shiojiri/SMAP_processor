@@ -45,7 +45,9 @@ def main() -> None:
     a.output_path.parent.mkdir(parents=True, exist_ok=True)
     lat, lon = target_grid(); out = Dataset(a.output_path, "w", format="NETCDF4")
     out.createDimension("time", None); out.createDimension("lat", 360); out.createDimension("lon", 720)
-    t = out.createVariable("time", "i4", ("time",)); t.units = "days since 1970-01-01 00:00:00"; out.createVariable("lat", "f4", ("lat",))[:] = lat; out.createVariable("lon", "f4", ("lon",))[:] = lon
+    # AMSR's CDF writer copies source chunking. A one-day time chunk is valid
+    # both for short test files and for a full multi-year production file.
+    t = out.createVariable("time", "i4", ("time",), chunksizes=(1,)); t.units = "days since 1970-01-01 00:00:00"; out.createVariable("lat", "f4", ("lat",))[:] = lat; out.createVariable("lon", "f4", ("lon",))[:] = lon
     variables = {}
     for slot in ("A_01", "D_01"):
         soil = out.createVariable(f"soil_moisture_{slot}", "f4", ("time", "lat", "lon"), zlib=True, complevel=4, fill_value=np.float32(np.nan))
