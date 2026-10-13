@@ -23,7 +23,7 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--reference-depth", type=int, default=0)
     p.add_argument("--start", default=None); p.add_argument("--end", default=None)
     p.add_argument("--step-hours", type=float, default=24.0); p.add_argument("--window-hours", type=float, default=24.0)
-    p.add_argument("--output-dir", type=Path, default=Path("processed/l3_daily_0p5/cdf"))
+    p.add_argument("--output-dir", type=Path, default=Path("processed/l3_daily_0p5"))
     p.add_argument("--output-mode", choices=("merged", "per-file"), default="merged")
     p.add_argument("--output-file", type=Path, default=Path("SMAP_SMC_daily_0p5deg_cdf.nc"))
     p.add_argument("--overwrite", action="store_true")

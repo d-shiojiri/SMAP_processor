@@ -27,7 +27,7 @@ python3 cdf_match_smap.py --overwrite
 
 Stage 1 retains the `Retrieval_recommended` quality-flagged values only and keeps AM/PM as separate variables. Stage 2 writes AM as `soil_moisture_A_01` and PM as `soil_moisture_D_01`, with matching `observation_time_min_*` variables. Those exact slot names and `(time, lat, lon)` layout are required by `AMSR_processor`'s query and CDF modules. Soil moisture is converted from the SMAP source unit (m3/m3) to the AMSR-compatible percent convention.
 
-`cdf_match_smap.py` calls the same CDF module used for AMSR and therefore writes the same A/D-slot layout. Its default output is `processed/l3_daily_0p5/cdf/SMAP_SMC_daily_0p5deg_cdf.nc`.
+`cdf_match_smap.py` calls the same CDF module used for AMSR and therefore writes the same A/D-slot layout. Its default output is `processed/l3_daily_0p5/SMAP_SMC_daily_0p5deg_cdf.nc`.
 
 `reference_paths_template.json` is a template for the reference soil-moisture NetCDF files. Edit it for the actual reference location and period. Reference files must provide `time`, 1-D `lat`/`lon`, and `SoilMoistV` (or specify `--reference-var`); a depth dimension is supported via `--reference-depth`.
 
